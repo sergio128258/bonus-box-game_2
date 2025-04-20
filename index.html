@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎯 Bonus Box Game – Slots Land</title>
   <style>
     body {
@@ -11,7 +10,7 @@
       font-family: Arial, sans-serif;
       color: #fff;
       text-align: center;
-      padding: 20px;
+      padding: 30px;
       backdrop-filter: brightness(0.8);
     }
 
@@ -21,32 +20,23 @@
       text-shadow: 2px 2px 4px #000;
     }
 
-    p {
-      font-size: 18px;
-      margin: 10px 0;
-      text-shadow: 1px 1px 2px #000;
-    }
-
     input {
-      padding: 12px;
+      padding: 10px;
       font-size: 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       border: none;
-      margin: 10px 0;
-      width: 200px;
-      text-align: center;
     }
 
     button {
-      font-size: 20px;
+      font-size: 22px;
       padding: 12px 28px;
-      margin: 15px auto;
+      margin: 20px auto;
       background: #ffcc00;
       color: #000;
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s;
     }
 
     button:hover {
@@ -57,60 +47,46 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 15px;
-      margin: 30px auto;
-      max-width: 600px;
+      gap: 20px;
+      margin-top: 30px;
     }
 
     .bonus-box {
       width: 100px;
       height: 100px;
-      background: rgba(0,0,0,0.6);
+      background: #000000aa;
       border: 3px solid #fff;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 24px;
       font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       transition: transform 0.3s, background 0.3s;
-    }
-
-    .bonus-box:hover {
-      background: rgba(0, 200, 83, 0.8);
-      transform: scale(1.05);
     }
 
     .bonus-box.selected {
       background-color: #00c853;
-      transform: scale(1.15);
-      color: #fff;
+      transform: scale(1.2);
     }
 
     #result {
-      font-size: 22px;
+      font-size: 24px;
       margin-top: 20px;
       text-shadow: 2px 2px 4px #000;
-    }
-
-    @media (max-width: 600px) {
-      .bonus-box {
-        width: 80px;
-        height: 80px;
-        font-size: 20px;
-      }
     }
   </style>
 </head>
 <body>
   <h1>🎯 Bonus Box Game</h1>
-  <p>Enter your username and pick a bonus box!</p>
+  <p>Enter your username and shoot one of the mystery boxes!</p>
   <input type="text" id="username" placeholder="Your username" />
   <br>
   <button onclick="startGame()">Start Game</button>
 
   <div class="box-container" id="boxContainer"></div>
+
+  <button id="shootButton" style="display:none;" onclick="shootBox()">➤ Shoot</button>
 
   <div id="result"></div>
 
@@ -132,10 +108,12 @@
       if (playedUsers.includes(username)) {
         document.getElementById('result').textContent = '❌ You have already played!';
         document.getElementById('boxContainer').innerHTML = '';
+        document.getElementById('shootButton').style.display = 'none';
         return;
       }
 
       document.getElementById('boxContainer').innerHTML = '';
+      document.getElementById('shootButton').style.display = 'inline-block';
       document.getElementById('result').textContent = '';
 
       boxes = [];
@@ -146,27 +124,25 @@
         const bonus = bonuses[Math.floor(Math.random() * bonuses.length)];
         box.dataset.bonus = bonus;
         box.textContent = '?';
-        box.addEventListener('click', () => selectBox(box));
         boxes.push(box);
         document.getElementById('boxContainer').appendChild(box);
       }
     }
 
-    function selectBox(selectedBox) {
-      if (selectedBox.classList.contains('selected')) return;
-
-      const bonus = selectedBox.dataset.bonus;
+    function shootBox() {
+      const randomBox = boxes[Math.floor(Math.random() * boxes.length)];
+      const bonus = randomBox.dataset.bonus;
 
       boxes.forEach(box => {
         box.textContent = '?';
         box.classList.remove('selected');
       });
 
-      selectedBox.classList.add('selected');
-      selectedBox.textContent = bonus + '%';
+      randomBox.classList.add('selected');
+      randomBox.textContent = bonus + '%';
 
       const reward = '$' + (10 * (1 + bonus / 100)).toFixed(2);
-      document.getElementById('result').innerHTML = `🎉 You won a <strong>${bonus}% bonus!</strong> (${reward})`;
+      document.getElementById('result').innerHTML = `🎉 You won a ${bonus}% bonus! (${reward})`;
 
       confetti();
 
@@ -181,6 +157,8 @@
         reward: reward
       };
       localStorage.setItem('lastWinner', JSON.stringify(resultData));
+
+      document.getElementById('shootButton').style.display = 'none';
     }
   </script>
 </body>
